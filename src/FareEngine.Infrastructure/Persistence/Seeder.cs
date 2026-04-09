@@ -1,15 +1,21 @@
 using FareEngine.Domain.FarePolicies;
 using FareEngine.Domain.Modifications;
 using FareEngine.Domain.SoldProducts;
+using Microsoft.Extensions.Logging;
 
 namespace FareEngine.Infrastructure.Persistence;
 
 public static class Seeder
 {
-    public static async Task SeedAsync(AppDbContext context, SoldProductManager soldProductManager)
+    public static async Task SeedAsync(AppDbContext context, SoldProductManager soldProductManager, ILogger logger)
     {
         if (context.FarePolicies.Any() || context.Modifications.Any() || context.SoldProducts.Any())
+        {
+            logger.LogInformation("Database already seeded. Skipping.");
             return;
+        }
+        
+        logger.LogInformation("Seeding database...");
 
         // ── Fare Policies ──────────────────────────────────────────────
 
@@ -104,5 +110,7 @@ public static class Seeder
             hybridTrip1, hybridTrip2, hybridTrip3, hybridTrip4);
 
         await context.SaveChangesAsync();
+        
+        logger.LogInformation("Database seeded successfully.");
     }
 }

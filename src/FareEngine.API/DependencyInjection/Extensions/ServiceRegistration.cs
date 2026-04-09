@@ -34,10 +34,12 @@ public static class ServiceRegistration
         return services;
     }
 
-    public static IServiceCollection AddInfrastructure(this IServiceCollection services)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        
         services.AddDbContext<AppDbContext>(options =>
-            options.UseInMemoryDatabase(databaseName: "FareEngine")
+            options.UseSqlServer(connectionString)
         );
 
         services.AddScoped<ISoldProductRepository, SoldProductRepository>();

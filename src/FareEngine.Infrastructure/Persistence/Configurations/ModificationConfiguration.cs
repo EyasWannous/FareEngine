@@ -24,7 +24,9 @@ public sealed class FirstClassModificationConfiguration : IEntityTypeConfigurati
 {
     public void Configure(EntityTypeBuilder<FirstClassModification> builder)
     {
-        builder.Property(m => m.Surcharge).IsRequired();
+        builder.Property(m => m.Surcharge)
+            .IsRequired()
+            .HasPrecision(18, 2);
     }
 }
 
@@ -32,6 +34,8 @@ public sealed class SeniorDiscountModificationConfiguration : IEntityTypeConfigu
 {
     public void Configure(EntityTypeBuilder<SeniorDiscountModification> builder)
     {
-        builder.Property(m => m.DiscountPercentage).IsRequired();
+        builder.Property(m => m.DiscountPercentage)
+            .IsRequired()
+            .HasPrecision(5, 4);
     }
 }

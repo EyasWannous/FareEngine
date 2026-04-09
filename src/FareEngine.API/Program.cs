@@ -2,6 +2,7 @@ using FareEngine.API;
 using FareEngine.API.DependencyInjection.Extensions;
 using FareEngine.Domain.SoldProducts;
 using FareEngine.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +14,7 @@ builder.Services.AddSwaggerGen();
 builder.Services
     .AddDomain()
     .AddApplication()
-    .AddInfrastructure();
+    .AddInfrastructure(builder.Configuration);
 
 builder.Services.AddControllers();
 
@@ -39,7 +40,32 @@ using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var soldProductManager = scope.ServiceProvider.GetRequiredService<SoldProductManager>();
-    await Seeder.SeedAsync(context, soldProductManager);
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+
+    try
+    {
+        var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
+
+        var pendingMigrationsList = pendingMigrations.ToList();
+        
+        if (pendingMigrationsList.Count is not 0)
+        {
+            logger.LogInformation("Applying {Count} pending migration(s)...", pendingMigrationsList.Count);
+            await context.Database.MigrateAsync();
+            logger.LogInformation("Migrations applied successfully.");
+        }
+        else
+        {
+            logger.LogInformation("No pending migrations.");
+        }
+
+        await Seeder.SeedAsync(context, soldProductManager, logger);
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "An error occurred while migrating or seeding the database.");
+        throw;
+    }
 }
 
 await app.RunAsync();

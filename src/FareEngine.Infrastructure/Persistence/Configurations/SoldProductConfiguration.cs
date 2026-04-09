@@ -37,7 +37,10 @@ public sealed class SoldHybridTripConfiguration : IEntityTypeConfiguration<SoldH
 {
     public void Configure(EntityTypeBuilder<SoldHybridTrip> builder)
     {
-        builder.Property(p => p.DistanceInKm).IsRequired();
+        builder.Property(p => p.DistanceInKm)
+            .IsRequired()
+            .HasPrecision(10, 2);
+        
         builder.Property(p => p.ZoneNumber).IsRequired();
     }
 }

@@ -26,7 +26,8 @@ public sealed class FlatRateFarePolicyConfiguration : IEntityTypeConfiguration<F
     public void Configure(EntityTypeBuilder<FlatRateFarePolicy> builder)
     {
         builder.Property(p => p.FlatAmount)
-            .IsRequired();
+            .IsRequired()
+            .HasPrecision(18, 2);
     }
 }
 
@@ -35,7 +36,8 @@ public sealed class DistanceBasedFarePolicyConfiguration : IEntityTypeConfigurat
     public void Configure(EntityTypeBuilder<DistanceBasedFarePolicy> builder)
     {
         builder.Property(p => p.RatePerKm)
-            .IsRequired();
+            .IsRequired()
+            .HasPrecision(18, 4);
     }
 }
 
@@ -44,7 +46,8 @@ public sealed class ZoneBasedFarePolicyConfiguration : IEntityTypeConfiguration<
     public void Configure(EntityTypeBuilder<ZoneBasedFarePolicy> builder)
     {
         builder.Property(p => p.ZonePrice)
-            .IsRequired();
+            .IsRequired()
+            .HasPrecision(18, 2);
 
         builder.Property(p => p.ZoneNumber)
             .IsRequired();
