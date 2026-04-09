@@ -41,23 +41,29 @@ using (var scope = app.Services.CreateScope())
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     var soldProductManager = scope.ServiceProvider.GetRequiredService<SoldProductManager>();
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-
-    var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
-
-    var pendingMigrationList = pendingMigrations.ToList();
-    
-    if (pendingMigrationList.Count is not 0)
+    try
     {
-        logger.LogInformation("Applying {Count} pending migration(s)...", pendingMigrationList.Count);
-        await context.Database.MigrateAsync();
-        logger.LogInformation("Migrations applied successfully.");
-    }
-    else
-    {
-        logger.LogInformation("No pending migrations.");
-    }
+        var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
 
-    await Seeder.SeedAsync(context, soldProductManager, logger);
+        var pendingMigrationsList = pendingMigrations.ToList();
+
+        if (pendingMigrationsList.Count is not 0)
+        {
+            logger.LogInformation("Applying {Count} pending migration(s)...", pendingMigrationsList.Count);
+            await context.Database.MigrateAsync();
+            logger.LogInformation("Migrations applied successfully.");
+        }
+        else
+        {
+            logger.LogInformation("No pending migrations.");
+        }
+
+        await Seeder.SeedAsync(context, soldProductManager, logger);
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "An error occurred while applying migrations or seeding the database.");
+    }
 }
 
 await app.RunAsync();
