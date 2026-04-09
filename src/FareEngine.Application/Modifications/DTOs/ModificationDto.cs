@@ -12,6 +12,8 @@ public class ModificationDto
     public decimal? Surcharge { get; set; }
     public decimal? DiscountPercentage { get; set; }
     
+    public string ModificationTypeString => Type.ToString();
+    
     public static ModificationDto MapFromModel(Modification input)
     {
         return new ModificationDto

@@ -12,6 +12,8 @@ public class SoldProductDto
     public List<FarePolicyDto> FarePolicies { get; set; } = [];
     public List<ModificationDto> Modifications { get; set; } = [];
 
+    public string ProductTypeString => Type.ToString();
+    
     public static SoldProductDto MapFromViewModel(SoldProductViewModel input)
     {
         return new SoldProductDto

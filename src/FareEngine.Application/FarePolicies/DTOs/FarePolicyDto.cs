@@ -13,6 +13,8 @@ public class FarePolicyDto
     public decimal? FlatAmount { get; set; }
     public int? ZoneNumber { get; set; }
     public decimal? ZonePrice { get; set; }
+
+    public string FarePolicyTypeString => Type.ToString();
     
     public static FarePolicyDto MapFromModel(FarePolicy input)
     {

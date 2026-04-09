@@ -9,6 +9,9 @@ public sealed class FirstClassModificationCalculator : IModificationCalculator
         if (modification is not FirstClassModification mod)
             throw new ArgumentException("Invalid modification type", nameof(modification));
     
-        return new ModificationResult(mod.Surcharge, $"First class surcharge: €{mod.Surcharge}");
+        return new ModificationResult(
+            Delta: mod.Surcharge,
+            Label: $"First class surcharge: €{mod.Surcharge}"
+        );
     }
 }

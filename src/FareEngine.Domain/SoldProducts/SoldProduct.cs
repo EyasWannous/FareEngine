@@ -25,10 +25,10 @@ public abstract class SoldProduct
     internal void AddModification(Guid modificationId)
         => _modifications.Add(new SoldProductModification(Id, modificationId));
     
-    internal void AddFarePolicies(List<Guid> farePolicyIds)
+    internal void AddFarePolicies(IEnumerable<Guid> farePolicyIds)
         => _farePolicies.AddRange(farePolicyIds.Select(farePolicyId => new SoldProductFarePolicy(Id, farePolicyId)));
     
-    internal void AddModifications(List<Guid> modificationsIds)
+    internal void AddModifications(IEnumerable<Guid> modificationsIds)
         => _modifications.AddRange(modificationsIds.Select(modificationId => new SoldProductModification(Id, modificationId)));
 
 }

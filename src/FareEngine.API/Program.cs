@@ -1,5 +1,6 @@
 using FareEngine.API;
 using FareEngine.API.DependencyInjection.Extensions;
+using FareEngine.Domain.SoldProducts;
 using FareEngine.Infrastructure.Persistence;
 using Scalar.AspNetCore;
 
@@ -37,7 +38,8 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    await Seeder.SeedAsync(context);
+    var soldProductManager = scope.ServiceProvider.GetRequiredService<SoldProductManager>();
+    await Seeder.SeedAsync(context, soldProductManager);
 }
 
 await app.RunAsync();

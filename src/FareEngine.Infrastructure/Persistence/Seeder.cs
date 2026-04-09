@@ -6,7 +6,7 @@ namespace FareEngine.Infrastructure.Persistence;
 
 public static class Seeder
 {
-    public static async Task SeedAsync(AppDbContext context)
+    public static async Task SeedAsync(AppDbContext context, SoldProductManager soldProductManager)
     {
         if (context.FarePolicies.Any() || context.Modifications.Any() || context.SoldProducts.Any())
             return;
@@ -47,6 +47,8 @@ public static class Seeder
             zoneBasedPolicyZone1,
             zoneBasedPolicyZone2,
             zoneBasedPolicyZone3);
+        
+        await context.SaveChangesAsync();
 
         // ── Modifications ──────────────────────────────────────────────
 
@@ -64,35 +66,38 @@ public static class Seeder
             firstClassModification,
             seniorDiscountModification);
 
+        await context.SaveChangesAsync();
+
         // ── Sold Products ──────────────────────────────────────────────
-        
-        var productManager = new SoldProductManager();
 
         // Daily passes
-        var dailyPass1 = productManager.CreateDailyPass(
+        var dailyPass1 = await soldProductManager.CreateDailyPassAsync(
             flatRatePolicy.Id, []);
 
-        var dailyPass2 = productManager.CreateDailyPass(
+        var dailyPass2 = await soldProductManager.CreateDailyPassAsync(
             flatRatePolicy.Id, [firstClassModification.Id]);
 
-        var dailyPass3 = productManager.CreateDailyPass(
+        var dailyPass3 = await soldProductManager.CreateDailyPassAsync(
             flatRatePolicy.Id, [seniorDiscountModification.Id]);
 
-        var dailyPass4 = productManager.CreateDailyPass(
+        var dailyPass4 = await soldProductManager.CreateDailyPassAsync(
             flatRatePolicy.Id, [firstClassModification.Id, seniorDiscountModification.Id]);
 
         // Hybrid trips
-        var hybridTrip1 = productManager.CreateHybridTrip(
-            distanceInKm: 50m, zoneNumber: 1, distanceBasedPolicy.Id, zoneBasedPolicyZone1.Id, []);
+        var hybridTrip1 = await soldProductManager.CreateHybridTripAsync(
+            distanceInKm: 50m, distanceBasedPolicy.Id, zoneBasedPolicyZone1.Id, []);
 
-        var hybridTrip2 = productManager.CreateHybridTrip(
-            distanceInKm: 80m, zoneNumber: 2, distanceBasedPolicy.Id, zoneBasedPolicyZone2.Id, [firstClassModification.Id]);
+        var hybridTrip2 = await soldProductManager.CreateHybridTripAsync(
+            distanceInKm: 80m, distanceBasedPolicy.Id, zoneBasedPolicyZone2.Id,
+            [firstClassModification.Id]);
 
-        var hybridTrip3 = productManager.CreateHybridTrip(
-            distanceInKm: 120m, zoneNumber: 3, distanceBasedPolicy.Id, zoneBasedPolicyZone3.Id, [seniorDiscountModification.Id]);
+        var hybridTrip3 = await soldProductManager.CreateHybridTripAsync(
+            distanceInKm: 120m, distanceBasedPolicy.Id, zoneBasedPolicyZone3.Id,
+            [seniorDiscountModification.Id]);
 
-        var hybridTrip4 = productManager.CreateHybridTrip(
-            distanceInKm: 200m, zoneNumber: 2, distanceBasedPolicy.Id, zoneBasedPolicyZone2.Id, [firstClassModification.Id, seniorDiscountModification.Id]);
+        var hybridTrip4 = await soldProductManager.CreateHybridTripAsync(
+            distanceInKm: 200m, distanceBasedPolicy.Id, zoneBasedPolicyZone2.Id,
+            [firstClassModification.Id, seniorDiscountModification.Id]);
 
         await context.SoldProducts.AddRangeAsync(
             dailyPass1, dailyPass2, dailyPass3, dailyPass4,
