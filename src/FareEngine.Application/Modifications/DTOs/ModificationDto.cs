@@ -13,18 +13,6 @@ public class ModificationDto
     public decimal? DiscountPercentage { get; set; }
     
     public string ModificationTypeString => Type.ToString();
-    
-    public static ModificationDto MapFromModel(Modification input)
-    {
-        return new ModificationDto
-        {
-            Id = input.Id,
-            Name = input.Name,
-            Type = input.Type,
-            Surcharge = input is FirstClassModification fcm ? fcm.Surcharge : null,
-            DiscountPercentage = input is SeniorDiscountModification sdm ? sdm.DiscountPercentage : null
-        };
-    }
 
     public static ModificationDto MapFromViewModel(ModificationViewModel input)
     {
