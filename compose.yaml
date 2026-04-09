@@ -1,12 +1,6 @@
 ﻿services:
-  fareengine.api:
-    image: fareengine.api
-    build:
-      context: .
-      dockerfile: src/FareEngine.API/Dockerfile
-
   sqlserver:
-    image: mcr.microsoft.com/mssql/server:2025-latest
+    image: mcr.microsoft.com/mssql/server:2025-latest # (Or 2022-latest)
     container_name: fareengine-sqlserver
     environment:
       SA_PASSWORD: "FareEngine_2025!"
@@ -17,10 +11,25 @@
     volumes:
       - sqlserver_data:/var/opt/mssql
     healthcheck:
-      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "FareEngine_2025!", "-Q", "SELECT 1"]
+      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "FareEngine_2025!", "-C", "-Q", "SELECT 1"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 30s
+  
+  fareengine.api:
+    image: fareengine.api
+    build:
+      context: .
+      dockerfile: src/FareEngine.API/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=fareengine-sqlserver,1433;Database=FareEngine;User Id=sa;Password=FareEngine_2025!;TrustServerCertificate=True
+    depends_on:
+      sqlserver:
+        condition: service_healthy
 
 volumes:
   sqlserver_data:
